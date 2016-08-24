@@ -16,7 +16,10 @@ challenge
  
 Params to be used 
 format: json 
-appid: Application ID, provided as simple data   uid: User ID, provided as simple data   device_id: use Android advertising identifier   locale: provided as simple data 
+appid: Application ID, provided as simple data   
+uid: User ID, provided as simple data   
+device_id: use Android advertising identifier   
+locale: provided as simple data 
 ip: provided as simple data 
 offer_types: 112 
  
@@ -26,3 +29,8 @@ uid: spiderman
 locale: ‘DE’ 
 ip: ‘109.235.143.113’ 
 API Key: 1c915e3b5d42d05136185030892fbb846c278927
+
+
+advertisingIdInfo : {0e40c2eb-3bd7-453d-bfbd-c00bccda85ad} true ID: 0e40c2eb-3bd7-453d-bfbd-c00bccda85ad isLimitAdTrackingEnabled true toString : {0e40c2eb-3bd7-453d-bfbd-c00bccda85ad}true
+advertisingIdInfo : {4525d409-7557-4c4d-ae0e-fd9ee90a3a1f} false ID: 4525d409-7557-4c4d-ae0e-fd9ee90a3a1f isLimitAdTrackingEnabled false toString : {4525d409-7557-4c4d-ae0e-fd9ee90a3a1f}false
+
