@@ -3,12 +3,15 @@ package com.k1.fyber.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by K1 on 8/24/16.
  */
+@Parcel
 public class Offers {
 
     @SerializedName("code")

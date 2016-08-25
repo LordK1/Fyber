@@ -3,9 +3,12 @@ package com.k1.fyber.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 /**
  * Created by K1 on 8/24/16.
  */
+@Parcel
 public class TimeToPayout {
 
     @SerializedName("amount")

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="offer"
+            type="com.k1.fyber.model.Offer" />
+
+        <variable
+            name="callback"
+            type="com.k1.fyber.callback.OfferViewHolderCallback" />
+    </data>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        app:cardMaxElevation="10dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/offer_thumbnail_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:thumbnailUrl="@{offer.thumbnailUrl.lowRes}"
+
+                />
+
+            <TextView
+                android:id="@+id/offer_title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->callback.onOfferClicked(offer)}"
+                android:text="@{offer.title}" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>

@@ -1,6 +1,7 @@
 package com.k1.fyber.api;
 
 import com.google.gson.JsonObject;
+import com.k1.fyber.model.Offers;
 
 import java.util.Map;
 
@@ -29,15 +30,15 @@ public interface ApiService {
      * google_ad_id=[GAID]&
      * google_ad_id_limited_tracking_enabled=[GAID ENABLED]&
      * hashkey=[HASHKEY]
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * appid: 2070
      * uid: spiderman
      * locale: ‘DE’
      * ip: ‘109.235.143.113’
      * API Key: 1c915e3b5d42d05136185030892fbb846c278927
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * String sample = new StringBuilder()
      * .append("appid=2070&")
      * .append("device_id=0e40c2eb3bd7453dbfbdc00bccda85ad&")
@@ -58,7 +59,7 @@ public interface ApiService {
     );
 
     @GET("offers.json")
-    Call<JsonObject> getListWithParams(@QueryMap Map<String, String> params);
+    Call<Offers> getListWithParams(@QueryMap Map<String, String> params);
 
 
 }

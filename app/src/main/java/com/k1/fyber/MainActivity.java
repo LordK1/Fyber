@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
@@ -11,12 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.k1.fyber.api.ApiService;
+import com.k1.fyber.model.Offers;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -27,9 +27,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOCALE = "de";
     private static final String IP = "109.235.143.113";
     private static final String OFFER_TYPE = "112";
-    private static final String BASE_URL = "http://api.fyber.com/feed/v1/offers.json?";
+//    private static final String BASE_URL = "http://api.fyber.com/feed/v1/offers.json?";
     private static final String API_KEY = "1c915e3b5d42d05136185030892fbb846c278927";
     private OkHttpClient mClient;
 
@@ -99,20 +97,21 @@ public class MainActivity extends AppCompatActivity {
 //        generate SHA1 bytes from string of query params
         final String hashKey = generateSHA1FromString(builder.toString());
         Log.i(TAG, "<*<*<*<" + hashKey + " >*>*>*>");
-        final StringBuilder newStringBuilder = makeStringFromMap(sortedMap).append("hashkey=" + hashKey);
-        // make http url with created params and added hash key at the end
-        HttpUrl httpUrl = HttpUrl.parse(BASE_URL + newStringBuilder.toString());
-        Request request = new Request.Builder()
-                .url(httpUrl)
-                .build();
-        
+
         sortedMap.put("hashkey", hashKey);
-        apiService.getListWithParams(sortedMap).enqueue(new Callback<JsonObject>() {
+        apiService.getListWithParams(sortedMap).enqueue(new Callback<Offers>() {
+
+            private Fragment fragment;
+
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<Offers> call, Response<Offers> response) {
                 Log.d(TAG, "onResponse() called with: " + "call = [" + call + "], response = [" + response + "]");
                 if (response.isSuccessful()) {
-                    Toast.makeText(MainActivity.this, response.body().toString(), Toast.LENGTH_SHORT).show();
+                    fragment = getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    if (fragment != null) {
+                        ((OffersFragment) fragment).updateList(response.body());
+                    }
+
                 } else {
                     try {
                         Log.e(TAG, " error " + response.errorBody().string());
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(Call<Offers> call, Throwable t) {
                 t.printStackTrace();
             }
         });
