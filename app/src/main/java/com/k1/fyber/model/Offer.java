@@ -111,6 +111,14 @@ public class Offer {
         return payout;
     }
 
+    public String getPayoutString(){
+        return String.valueOf(payout);
+    }
+
+    public String getTimeToPayoutString(){
+        return String.valueOf(timeToPayout);
+    }
+
     public void setPayout(Integer payout) {
         this.payout = payout;
     }

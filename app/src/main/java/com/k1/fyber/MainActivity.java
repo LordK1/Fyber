@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
@@ -16,7 +17,7 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.k1.fyber.api.ApiService;
-import com.k1.fyber.model.Offers;
+import com.k1.fyber.model.OffersData;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOCALE = "de";
     private static final String IP = "109.235.143.113";
     private static final String OFFER_TYPE = "112";
-//    private static final String BASE_URL = "http://api.fyber.com/feed/v1/offers.json?";
+    //    private static final String BASE_URL = "http://api.fyber.com/feed/v1/offers.json?";
     private static final String API_KEY = "1c915e3b5d42d05136185030892fbb846c278927";
     private OkHttpClient mClient;
 
@@ -99,14 +100,22 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "<*<*<*<" + hashKey + " >*>*>*>");
 
         sortedMap.put("hashkey", hashKey);
-        apiService.getListWithParams(sortedMap).enqueue(new Callback<Offers>() {
+        apiService.getListWithParams(sortedMap).enqueue(new Callback<OffersData>() {
 
             private Fragment fragment;
 
             @Override
-            public void onResponse(Call<Offers> call, Response<Offers> response) {
+            public void onResponse(Call<OffersData> call, Response<OffersData> response) {
                 Log.d(TAG, "onResponse() called with: " + "call = [" + call + "], response = [" + response + "]");
                 if (response.isSuccessful()) {
+                    if (response.body().getOffers().isEmpty()) { // check the offers list to handle empty list
+                        try {
+                            showNoOfferDialog(response.body());
+                            return;
+                        } catch (Exception e) { // Ops, something getting wrong
+                            e.printStackTrace();
+                        }
+                    }
                     fragment = getSupportFragmentManager().findFragmentById(R.id.fragment);
                     if (fragment != null) {
                         ((OffersFragment) fragment).updateList(response.body());
@@ -122,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Offers> call, Throwable t) {
+            public void onFailure(Call<OffersData> call, Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -132,10 +141,31 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    /**
+     * When there aren't any {@link com.k1.fyber.model.Offer} in received {@link OffersData} from API
+     * just show an {@link android.support.v7.app.AlertDialog} to user
+     *
+     * @param offersData
+     */
+    private void showNoOfferDialog(OffersData offersData) throws Exception {
+        Log.d(TAG, "showNoOfferDialog() called with: " + "offersData = [" + offersData + "]");
+        if (!offersData.getOffers().isEmpty()) {
+            throw new Exception("OOPPPSS, something get it wrong, Please concentrate on your code !!!");
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setMessage("Opps there is not any Offers now Server Response is : " + offersData.getMessage()
+                + " Code : " + offersData.getCode()
+                + " and Count is : " + offersData.getCode()
+        );
+        builder.setCancelable(true);
+        builder.show();
     }
 
     /**

@@ -1,62 +1,98 @@
 package com.k1.fyber;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.k1.fyber.adapter.OffersAdapter;
 import com.k1.fyber.callback.OfferViewHolderCallback;
 import com.k1.fyber.model.Offer;
-import com.k1.fyber.model.Offers;
+import com.k1.fyber.model.OffersData;
+import com.k1.fyber.model.Thumbnail;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * to show list of {@link com.k1.fyber.model.Offer} in {@link OffersFragment}
  */
 public class OffersFragment extends Fragment implements OfferViewHolderCallback {
 
-    public static final String FRAGMENT_NAME = OffersFragment.class.getName();
     private static final String TAG = OffersFragment.class.getSimpleName();
     private View root;
     private RecyclerView mRecyclerView;
     private ArrayList<Offer> list;
     private OffersAdapter adapter;
+    private OffersData mOffersData;
 
     public OffersFragment() {
+        list = new ArrayList<>();
+        adapter = new OffersAdapter(list, this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // Imperfect: 8/26/16 OffersFragment onAttach
+        Log.d(TAG, "onAttach() called with: " + "context = [" + context + "]");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView() called with: " + "inflater = [" + inflater + "], container = ["
+                + container + "], savedInstanceState = [" + savedInstanceState + "]");
         root = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) root.findViewById(R.id.main_offers_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        list = new ArrayList<>();
-        adapter = new OffersAdapter(list, this);
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);
         return root;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // Imperfect: 8/26/16 OffersFragment onActivityCreated
+        Log.d(TAG, "onActivityCreated() called with: " + "savedInstanceState = [" + savedInstanceState + "]");
+        /*if (savedInstanceState != null) {
+            mOffersData = Parcels.unwrap(savedInstanceState.getParcelable("OffersData"));
+            list = (ArrayList<Offer>) mOffersData.getOffers();
+        }*/
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+//        outState.putParcelable("OffersData", Parcels.wrap(mOffersData));
     }
 
     /**
      * Update list after
      *
-     * @param offers
+     * @param offersData
      */
-    public void updateList(Offers offers) {
-        Log.d(TAG, "updateList() called with: " + "offers = [" + offers + "]");
-        this.list.addAll(offers.getOffers());
+    public void updateList(OffersData offersData) {
+        Log.d(TAG, "updateList() called with: " + "offersData = [" + offersData + "]");
+        this.list.addAll(offersData.getOffers());
         this.adapter.notifyDataSetChanged();
     }
 
+    /**
+     * When on {@link Offer} item clicked, it depends on the scenario you can change the reaction of
+     * callback by adding your codes in this method
+     *
+     * @param offer
+     * @return
+     */
     @Override
     public Offer onOfferClicked(Offer offer) {
         Log.d(TAG, "onOfferClicked() called with: " + "offer = [" + offer + "]");
@@ -64,60 +100,16 @@ public class OffersFragment extends Fragment implements OfferViewHolderCallback 
         return offer;
     }
 
-    /**
-     * To adopt list of {@link Offer} in {@link OffersFragment}
-     */
-    private class OffersAdapter extends RecyclerView.Adapter<OfferViewHolder> {
-
-        private final List<Offer> offers;
-        private final OfferViewHolderCallback callback;
-
-        public OffersAdapter(List<Offer> offers, OfferViewHolderCallback callback) {
-            this.offers = offers;
-            this.callback = callback;
-        }
-
-        @Override
-        public OfferViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final ViewDataBinding view = DataBindingUtil.inflate(
-                    LayoutInflater.from(parent.getContext()), R.layout.offer_view_holder, parent, false);
-            return new OfferViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(OfferViewHolder holder, int position) {
-            final ViewDataBinding dataBinding = holder.getDataBinding();
-            // bind the variables with data
-            dataBinding.setVariable(BR.offer, getItem(position));
-            dataBinding.setVariable(BR.callback, this.callback);
-
-        }
-
-        private Offer getItem(int position) {
-            return offers.get(position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return offers.size();
-        }
+    @Override
+    public void onOfferTitleClicked(String title) {
+        Log.d(TAG, "onOfferTitleClicked() called with: " + "title = [" + title + "]");
     }
 
-    /**
-     * extended {@link android.support.v7.widget.RecyclerView.ViewHolder} to render
-     * {@link com.k1.fyber.model.Offer} items into views
-     */
-    private class OfferViewHolder extends RecyclerView.ViewHolder {
-
-        private ViewDataBinding dataBinding;
-
-        public OfferViewHolder(ViewDataBinding view) {
-            super(view.getRoot());
-            dataBinding = view;
-        }
-
-        public ViewDataBinding getDataBinding() {
-            return dataBinding;
-        }
+    @Override
+    public Offer onThumbnailClicked(Thumbnail thumbnail) {
+        Log.d(TAG, "onThumbnailClicked() called with: " + "thumbnail = [" + thumbnail + "]");
+        return null;
     }
+
+
 }

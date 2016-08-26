@@ -12,7 +12,7 @@ import java.util.List;
  * Created by K1 on 8/24/16.
  */
 @Parcel
-public class Offers {
+public class OffersData {
 
     @SerializedName("code")
     @Expose
@@ -40,7 +40,7 @@ public class Offers {
 
     @Override
     public String toString() {
-        return "Offers{" +
+        return "OffersData{" +
                 "code='" + code + '\'' +
                 ", message='" + message + '\'' +
                 ", count=" + count +
