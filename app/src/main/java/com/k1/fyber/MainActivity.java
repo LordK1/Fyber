@@ -2,17 +2,22 @@ package com.k1.fyber;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -141,9 +146,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
+                GetParameterDialogFragment.newInstance().show(getSupportFragmentManager(), GetParameterDialogFragment.FRAGMENT_NAME);
             }
         });
     }
@@ -159,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         if (!offersData.getOffers().isEmpty()) {
             throw new Exception("OOPPPSS, something get it wrong, Please concentrate on your code !!!");
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Opps there is not any Offers now Server Response is : " + offersData.getMessage()
                 + " Code : " + offersData.getCode()
                 + " and Count is : " + offersData.getCode()
@@ -239,5 +243,78 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * to get (uid, API Key, appid, pub0) parameters from user
+     */
+    public static class GetParameterDialogFragment extends DialogFragment {
+
+        public static final String FRAGMENT_NAME = GetParameterDialogFragment.class.getName();
+        private View root;
+        private Button mOkButton;
+        private Button mFillButton;
+        private Button mTryButton;
+
+        public static GetParameterDialogFragment newInstance() {
+            Bundle args = new Bundle();
+            GetParameterDialogFragment fragment = new GetParameterDialogFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            root = LayoutInflater.from(getContext()).inflate(R.layout.fragment_get_parameter, container, false);
+            getDialog().setCancelable(false);
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            mOkButton = (Button) root.findViewById(R.id.get_ok_button);
+            mTryButton = (Button) root.findViewById(R.id.get_try_with_values);
+            mTryButton.setOnClickListener(new OnTryClickListener());
+            mFillButton = (Button) root.findViewById(R.id.get_fill_values_button);
+            mFillButton.setOnClickListener(new OnFillClickListener());
+            mOkButton.setOnClickListener(new OnOkClickListener());
+
+            return root;
+        }
+
+
+        /**
+         * When Try button clicked, check the fields values and if there isn't any problem
+         * must go on
+         */
+        private static class OnTryClickListener implements View.OnClickListener {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
+            }
+        }
+
+        /**
+         * When fill button clicked, just fill fields with predefined values
+         */
+        private static class OnFillClickListener implements View.OnClickListener {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
+            }
+        }
+
+        /**
+         * When ok button clicked, just try to make request with predefined values as documentaion
+         */
+        private static class OnOkClickListener implements View.OnClickListener {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
+            }
+        }
     }
 }

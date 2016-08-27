@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:padding="7dp">
+
+
+    <!--(uid, API Key, appid, pub0)-->
+
+    <TextView
+        android:id="@+id/get_message_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="Sans-Serif"
+        android:text="@string/get_parameters_message"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/get_uid_edit_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/get_message_text_view"
+        android:layout_marginTop="10dp"
+
+        android:textSize="12sp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/get_uid_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/get_your_uid_hint"
+            android:imeOptions="actionNext"
+            android:textSize="@dimen/small_text_size">
+
+            <requestFocus />
+        </android.support.design.widget.TextInputEditText>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/get_api_key_edit_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/get_uid_edit_input"
+        android:textSize="@dimen/small_text_size">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/get_api_key_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/get_api_key_hint"
+            android:imeOptions="actionNext"
+            android:textSize="@dimen/small_text_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/get_app_id_edit_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/get_api_key_edit_input"
+        android:textSize="@dimen/small_text_size">
+
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/get_app_id_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/get_app_id_hint"
+            android:imeOptions="actionNext"
+            android:textSize="@dimen/small_text_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/get_pub_edit_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/get_app_id_edit_input"
+
+        android:textSize="@dimen/small_text_size">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/get_pub_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/get_your_pub_hint"
+            android:imeOptions="actionDone"
+            android:textSize="@dimen/small_text_size" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.v7.widget.ButtonBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/get_pub_edit_input"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/get_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:text="@string/ok_button"
+            app:theme="@style/Widget.AppCompat.Button.Borderless.Colored"
+            tools:targetApi="lollipop" />
+
+        <Button
+            android:id="@+id/get_try_with_values"
+            style="@style/AlertDialog.AppCompat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:text="@string/get_try_values"
+            app:theme="@style/Widget.AppCompat.Button.Borderless.Colored"
+            tools:targetApi="lollipop" />
+
+        <Button
+            android:id="@+id/get_fill_values_button"
+            style="@style/AlertDialog.AppCompat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="@string/fill_values"
+            app:theme="@style/Widget.AppCompat.Button.Borderless.Colored" />
+
+
+    </android.support.v7.widget.ButtonBarLayout>
+
+</RelativeLayout>

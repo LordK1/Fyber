@@ -52,8 +52,9 @@ public class OffersFragment extends Fragment implements OfferViewHolderCallback 
         root = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) root.findViewById(R.id.main_offers_recycler_view);
 //        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL ));
+//        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
+//        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);
         return root;
     }

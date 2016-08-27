@@ -19,7 +19,7 @@
         android:onClick="@{()->callback.onOfferClicked(offer)}"
         android:orientation="vertical"
         app:cardBackgroundColor="@color/cardview_light_background"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="0dp"
         app:cardElevation="5dp"
         app:cardMaxElevation="10dp"
         app:cardPreventCornerOverlap="true"
@@ -43,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/offer_thumbnail_image_view"
+                android:fontFeatureSettings=""
                 android:onClick="@{()->callback.onOfferTitleClicked(offer.title)}"
                 android:text="@{offer.title}" />
 

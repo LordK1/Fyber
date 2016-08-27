@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Fyber</string>
     <string name="action_settings">Settings</string>
+    <string name="get_parameters_message">You can your own values or just try with pre defined values as documentation !!!</string>
+    <string name="get_try_values">Go On</string>
+    <string name="fill_values">Fill Values</string>
+    <string name="get_api_key_hint">Please Enter you API_KEY</string>
+    <string name="get_app_id_hint">Please Enter your own App Id</string>
+    <string name="get_your_pub_hint">Please Enter your Pub0</string>
+    <string name="ok_button">OK</string>
+    <string name="get_your_uid_hint">Please Enter your UID</string>
 </resources>
