@@ -1,10 +1,10 @@
 package com.k1.fyber.api;
 
 import com.google.gson.JsonObject;
-import com.k1.fyber.model.OffersData;
 
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -59,7 +59,7 @@ public interface ApiService {
     );
 
     @GET("offers.json")
-    Call<OffersData> getListWithParams(@QueryMap Map<String, String> params);
+    Call<ResponseBody> getListWithParams(@QueryMap Map<String, String> params);
 
 
 }

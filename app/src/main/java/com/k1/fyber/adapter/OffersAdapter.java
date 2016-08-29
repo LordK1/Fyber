@@ -48,6 +48,11 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OfferViewH
     }
 
     @Override
+    public long getItemId(int position) {
+        return getItem(position).getOfferId();
+    }
+
+    @Override
     public int getItemCount() {
         return offers.size();
     }

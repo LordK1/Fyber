@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,10 +51,8 @@ public class OffersFragment extends Fragment implements OfferViewHolderCallback 
                 + container + "], savedInstanceState = [" + savedInstanceState + "]");
         root = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) root.findViewById(R.id.main_offers_recycler_view);
-//        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL ));
-//        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
-//        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         return root;
     }
@@ -83,6 +81,7 @@ public class OffersFragment extends Fragment implements OfferViewHolderCallback 
      */
     public void updateList(OffersData offersData) {
         Log.d(TAG, "updateList() called with: " + "offersData = [" + offersData + "]");
+        this.list.clear();
         this.list.addAll(offersData.getOffers());
         this.adapter.notifyDataSetChanged();
     }

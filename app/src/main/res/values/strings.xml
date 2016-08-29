@@ -9,4 +9,5 @@
     <string name="get_your_pub_hint">Please Enter your Pub0</string>
     <string name="ok_button">OK</string>
     <string name="get_your_uid_hint">Please Enter your UID</string>
+    <string name="error_fields_are_not_valid">Oppsss, One of fields (UID, APP Key, APP id ) is Empty !!!</string>
 </resources>

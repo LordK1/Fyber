@@ -5,6 +5,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.test.ActivityInstrumentationTestCase2;
 
 import org.junit.Rule;
+import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -30,6 +31,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         getActivity();
     }
 
+    @Test
     public void test_list_shown() {
         onView(ViewMatchers.withId(R.id.fab)).perform(click());
     }

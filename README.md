@@ -3,6 +3,12 @@ This is challenge of Fyber employment for the Android Developer job opportunity,
 The Architecture of Application is MVP (Model - View - Presenter) or DataBinding also announced by [Google](https://developer.android.com/topic/libraries/data-binding/index.html).
 
 
+## Tasks: (Passed)
+* 1. Create a form asking for the variables (Uid, API key, appid, pub0) => [MainActivity.java](./app/src/main/java/com/k1/fyber/MainActivity.java#get)
+* 2. Make the request to the API passing the params and the authentication hash => [MainActivity.java]
+* 3. Get the result from the response. [OffersFragment.java](./app/src/main/java/com/k1/fyber/OffersFragment.java)
+* 4. Check the returned hash to check that it’s a real response (check signature) 
+
 ## Requirements & Installation
 You can download APK (app/app-release.apk) file from this [link](),
  
@@ -24,8 +30,9 @@ this is a list of used libraries/third parties to make an optimized solution:
 - [RecyclerView,CardView](https://developer.android.com/training/material/lists-cards.html)
 - [AppCompat](https://developer.android.com/topic/libraries/support-library/features.html)
 - [DataBinding](https://developer.android.com/topic/libraries/data-binding/index.html)
-- [Espresso](https://google.github.io/android-testing-support-library/docs/espresso/)
 - [Parceler](https://github.com/johncarl81/parceler)
+- [Espresso](https://google.github.io/android-testing-support-library/docs/espresso/)
+- [Robolectric](http://robolectric.org/)
  
  
 ### Challenge Contents 

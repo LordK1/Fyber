@@ -1,7 +1,8 @@
 package com.k1.fyber;
 
-import android.os.Build;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -9,38 +10,32 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.k1.fyber.api.ApiService;
+import com.k1.fyber.api.ServiceGenerator;
+import com.k1.fyber.callback.GetParameterCallback;
+import com.k1.fyber.callback.GetParameterDialogFragmentCallback;
 import com.k1.fyber.model.OffersData;
+import com.k1.fyber.model.Parameters;
 
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GetParameterDialogFragmentCallback, GetParameterCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String APP_ID = "2070";
@@ -50,7 +45,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String OFFER_TYPE = "112";
     //    private static final String BASE_URL = "http://api.fyber.com/feed/v1/offers.json?";
     private static final String API_KEY = "1c915e3b5d42d05136185030892fbb846c278927";
+
+    private static GetParameterDialogFragmentCallback callback;
     private OkHttpClient mClient;
+    private ApiService mApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,87 +57,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        Gson gson = new GsonBuilder().create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.fyber.com/feed/v1/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        final ApiService apiService = retrofit.create(ApiService.class);
-
-        // DATE and TIME configs
-        final Date date = new Date();
-//        final long timeLong = date.getTime();
-        final long timeLong = System.currentTimeMillis() / 1000;
-
-        final String time = String.valueOf(timeLong);
-        final String release = Build.VERSION.RELEASE;
-        Log.i(TAG, " Time : " + time
-                + " Current : " + System.currentTimeMillis()
-                + " Date : " + DateFormat.getDateFormat(this).format(new Date(timeLong))
-                + " release : " + release);
-
-        Map<String, String> stringMap = new HashMap<>();
-        stringMap.put("appid", APP_ID);
-        stringMap.put("timestamp", time);
-        stringMap.put("uid", UID);
-        stringMap.put("appid", APP_ID);
-        stringMap.put("ip", IP);
-        stringMap.put("locale", LOCALE);
-        stringMap.put("offer_types", OFFER_TYPE);
-//         print map before sort
-        mapLogger(stringMap);
-        SortedMap sortedMap = new TreeMap(stringMap);
-//         print map after sort
-        mapLogger(sortedMap);
-//         add sorted key value pairs with defined characters
-        final StringBuilder builder = makeStringFromMap(sortedMap);
-//        append API KEY before generate hash key
-
-        builder.append(API_KEY);
-        Log.i(TAG, "  <<<<<<< " + builder.toString() + " >>>>>> ");
-//        generate SHA1 bytes from string of query params
-        final String hashKey = generateSHA1FromString(builder.toString());
-        Log.i(TAG, "<*<*<*<" + hashKey + " >*>*>*>");
-
-        sortedMap.put("hashkey", hashKey);
-        apiService.getListWithParams(sortedMap).enqueue(new Callback<OffersData>() {
-
-            private Fragment fragment;
-
-            @Override
-            public void onResponse(Call<OffersData> call, Response<OffersData> response) {
-                Log.d(TAG, "onResponse() called with: " + "call = [" + call + "], response = [" + response + "]");
-                if (response.isSuccessful()) {
-                    if (response.body().getOffers().isEmpty()) { // check the offers list to handle empty list
-                        try {
-                            showNoOfferDialog(response.body());
-                            return;
-                        } catch (Exception e) { // Ops, something getting wrong
-                            e.printStackTrace();
-                        }
-                    }
-                    fragment = getSupportFragmentManager().findFragmentById(R.id.fragment);
-                    if (fragment != null) {
-                        ((OffersFragment) fragment).updateList(response.body());
-                    }
-
-                } else {
-                    try {
-                        Log.e(TAG, " error " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<OffersData> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        mApiService = ServiceGenerator.createService(ApiService.class);
+        getOffers(null);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -147,9 +66,71 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
-                GetParameterDialogFragment.newInstance().show(getSupportFragmentManager(), GetParameterDialogFragment.FRAGMENT_NAME);
+                showGetParameterDialog();
             }
         });
+    }
+
+    /**
+     * Show {@link GetParameterDialogFragment}
+     */
+    private void showGetParameterDialog() {
+        GetParameterDialogFragment.newInstance().show(getSupportFragmentManager(), GetParameterDialogFragment.FRAGMENT_NAME);
+    }
+
+    /**
+     * to get {@link SortedMap<String,String>()} from received {@link Parameters} or
+     * even though use predefined values as docs
+     *
+     * @param parameters
+     * @return
+     */
+    @NonNull
+    private SortedMap<String, String> getSortedMap(@Nullable Parameters parameters) {
+        final TreeMap<String, String> mTreeMap = new TreeMap<>();
+        if (parameters != null) {
+            mTreeMap.put("appid", parameters.getAppId());
+            mTreeMap.put("uid", parameters.getUid());
+            mTreeMap.put("pub0", parameters.getPub());
+        } else { // even we can use predefined values as docs
+            mTreeMap.put("appid", APP_ID);
+            mTreeMap.put("uid", UID);
+            mTreeMap.put("pub0", "");
+        }
+
+        mTreeMap.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+        mTreeMap.put("locale", LOCALE);
+        mTreeMap.put("ip", IP);
+        mTreeMap.put("offer_type", OFFER_TYPE);
+
+        return mTreeMap;
+    }
+
+    /**
+     * To use generated {@link SortedMap} from {@link Parameters} and send it as {@link retrofit2.http.QueryMap}
+     * and return back data as {@link OffersData} with in {@link OffersDataCallback}
+     *
+     * @param parameters
+     */
+    private void getOffers(@Nullable Parameters parameters) {
+
+        SortedMap sortedMap = getSortedMap(parameters);
+
+        mapLogger(sortedMap);
+//         add sorted key mParameters pairs with defined characters
+        final StringBuilder builder = makeStringFromMap(sortedMap);
+//        append API KEY before generate hash key
+        if (parameters != null && !parameters.getApiKey().isEmpty())
+            builder.append(parameters.getApiKey());
+        else
+            builder.append(API_KEY);
+        Log.i(TAG, "  <<<<<<< " + builder.toString() + " >>>>>> ");
+
+        final String hashKey = generateSHA1FromString(builder.toString());
+        Log.i(TAG, "<*<*<*<" + hashKey + " >*>*>*>");
+
+        sortedMap.put("hashkey", hashKey);
+        mApiService.getListWithParams(sortedMap).enqueue(new OffersDataCallback());
     }
 
     /**
@@ -163,17 +144,18 @@ public class MainActivity extends AppCompatActivity {
         if (!offersData.getOffers().isEmpty()) {
             throw new Exception("OOPPPSS, something get it wrong, Please concentrate on your code !!!");
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Opps there is not any Offers now Server Response is : " + offersData.getMessage()
-                + " Code : " + offersData.getCode()
-                + " and Count is : " + offersData.getCode()
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Opps there is not any Offers now Server Response message is : " + offersData.getMessage()
+                        + "\nCode : " + offersData.getCode()
+//                + " and \n Information is : " + offersData.getInformation()
         );
         builder.setCancelable(true);
+        builder.setPositiveButton("OK", new OnPositiveClickListener());
         builder.show();
     }
 
     /**
-     * To generate Hash Key for API request, must generate string of sorted key value pairs with added API key at the end
+     * To generate Hash Key for API request, must generate string of sorted key mParameters pairs with added API key at the end
      * and after that must create SHA1 bytes
      *
      * @param text
@@ -224,97 +206,124 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onTryWithPredefinedValues(Parameters mParameters) {
+        Log.d(TAG, "onTryWithPredefinedValues() called with: " + "mParameters = [" + mParameters + "]");
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onParametersUpdated(Parameters mParameters) {
+        Log.d(TAG, "onParametersUpdated() called with: " + "mParameters = [" + mParameters + "]");
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    }
+
+    @Override
+    public void onOkClicked(Parameters parameters) {
+        Log.d(TAG, "onOkClicked() called with: " + "parameters = [" + parameters + "]"
+                + " isValid : " + parameters.isValid()
+        );
+        if (parameters.isValid()) {
+            dismissDialog();
+            getOffers(parameters);
+        } else {
+            Toast.makeText(MainActivity.this, R.string.error_fields_are_not_valid, Toast.LENGTH_SHORT).show();
         }
 
-        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTryClicked(Parameters parameters) {
+        Log.d(TAG, "onTryClicked() called with: " + "parameters = [" + parameters + "]");
+        dismissDialog();
     }
 
     /**
-     * to get (uid, API Key, appid, pub0) parameters from user
+     * to {@link GetParameterDialogFragment#dismiss()}
      */
-    public static class GetParameterDialogFragment extends DialogFragment {
+    private void dismissDialog() {
+        final DialogFragment fragmentByTag = (DialogFragment) getSupportFragmentManager().findFragmentByTag(GetParameterDialogFragment.FRAGMENT_NAME);
+        if (fragmentByTag != null) {
+            fragmentByTag.dismiss();
+        }
+    }
 
-        public static final String FRAGMENT_NAME = GetParameterDialogFragment.class.getName();
-        private View root;
-        private Button mOkButton;
-        private Button mFillButton;
-        private Button mTryButton;
+    @Override
+    public void onFillClicked(Parameters parameters) {
+        Log.d(TAG, "onFillClicked() called with: " + "parameters = [" + parameters + "]");
+        parameters.setUid(UID);
+        parameters.setAppId(APP_ID);
+        parameters.setApiKey(API_KEY);
+        parameters.setPub(""); // to prevent null pointer exception
+    }
 
-        public static GetParameterDialogFragment newInstance() {
-            Bundle args = new Bundle();
-            GetParameterDialogFragment fragment = new GetParameterDialogFragment();
-            fragment.setArguments(args);
-            return fragment;
+    private static class OnPositiveClickListener implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            dialogInterface.dismiss();
+        }
+    }
+
+    /**
+     * when response of {@link ApiService#getListWithParams(Map)} received
+     */
+    private class OffersDataCallback implements Callback<ResponseBody> {
+
+        private static final String RESPONSE_SIGNATURE = "X-Sponsorpay-Response-Signature";
+        private Fragment fragment;
+        private boolean checkSignature;
+        private String responseBody;
+
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            try {
+
+                final String signatureHeader = response.headers().get(RESPONSE_SIGNATURE);
+                Log.i(TAG, " signatureHeader : " + signatureHeader);
+                responseBody = response.body().string();
+                StringBuilder builder = new StringBuilder(responseBody).append(API_KEY);
+                Log.i(TAG, " responseBody : " + responseBody);
+                final String sha1FromString = generateSHA1FromString(builder.toString());
+                Log.i(TAG, " sha1FromString : " + sha1FromString);
+                checkSignature = signatureHeader.equals(sha1FromString);
+                Log.i(TAG, String.format(" %s = %s => %s ", signatureHeader, sha1FromString, String.valueOf(checkSignature)));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (checkSignature) {
+
+                if (response.isSuccessful()) {
+                    final OffersData offersData = new GsonBuilder().create().fromJson(responseBody, OffersData.class);
+//                    Log.i(TAG, " ---------- OFFERS : " + offersData);
+
+                    if (offersData.getOffers().isEmpty()) { // check the offers list to handle empty list
+                        try {
+                            showNoOfferDialog(offersData); // show dialog if there isn't any offers
+                            return;
+                        } catch (Exception e) { // Ops, something getting wrong
+                            e.printStackTrace();
+                        }
+                    }
+                    fragment = getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    if (fragment != null) {
+                        ((OffersFragment) fragment).updateList(offersData);
+                    }
+
+                } else {
+                    try {
+                        Log.e(TAG, " error " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                Toast.makeText(MainActivity.this,
+                        "Oopps, Signature of response is INCORRECT !!!", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
-        }
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            root = LayoutInflater.from(getContext()).inflate(R.layout.fragment_get_parameter, container, false);
-            getDialog().setCancelable(false);
-            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            mOkButton = (Button) root.findViewById(R.id.get_ok_button);
-            mTryButton = (Button) root.findViewById(R.id.get_try_with_values);
-            mTryButton.setOnClickListener(new OnTryClickListener());
-            mFillButton = (Button) root.findViewById(R.id.get_fill_values_button);
-            mFillButton.setOnClickListener(new OnFillClickListener());
-            mOkButton.setOnClickListener(new OnOkClickListener());
-
-            return root;
-        }
-
-
-        /**
-         * When Try button clicked, check the fields values and if there isn't any problem
-         * must go on
-         */
-        private static class OnTryClickListener implements View.OnClickListener {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
-            }
-        }
-
-        /**
-         * When fill button clicked, just fill fields with predefined values
-         */
-        private static class OnFillClickListener implements View.OnClickListener {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
-            }
-        }
-
-        /**
-         * When ok button clicked, just try to make request with predefined values as documentaion
-         */
-        private static class OnOkClickListener implements View.OnClickListener {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick() called with: " + "view = [" + view + "]");
-            }
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            t.printStackTrace();
         }
     }
 }
