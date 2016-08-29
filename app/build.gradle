@@ -12,14 +12,28 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
         testHandleProfiling true
         testFunctionalTest true
-
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    lintOptions {
+        abortOnError false
+    }
 
-
+    /*testOptions {
+        unitTests.all {
+            // All the usual Gradle options.
+            jvmArgs '-XX:MaxPermSize=256m'
+            // A small neat trick so we can see android unit tests logging results as they happen.
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }*/
 
     buildTypes {
         release {
@@ -51,13 +65,18 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.picasso:picasso:2.5.2'
     // Espresso Tests
-    androidTestCompile 'com.android.support.test:runner:0.3'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
-    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
     androidTestCompile 'com.android.support:support-annotations:24.2.0'
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:rules:0.4.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    /*androidTestCompile('com.android.support:multidex-instrumentation:1.0.1') {
+        exclude group: 'com.android.support', module: 'multidex'
+    }*/
     // Robolectric Tests
     testCompile 'org.robolectric:robolectric:3.1'
     testCompile "org.robolectric:shadows-support-v4:3.0"
+    testCompile "org.robolectric:shadows-multidex:3.0"
     testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile 'com.squareup.assertj:assertj-android-recyclerview-v7:1.1.0@aar'
 
 }

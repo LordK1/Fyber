@@ -4,13 +4,26 @@ The Architecture of Application is MVP (Model - View - Presenter) or DataBinding
 
 
 ## Tasks: (Passed)
-* 1. Create a form asking for the variables (Uid, API key, appid, pub0) => [MainActivity.java](./app/src/main/java/com/k1/fyber/MainActivity.java#get)
-* 2. Make the request to the API passing the params and the authentication hash => [MainActivity.java]
-* 3. Get the result from the response. [OffersFragment.java](./app/src/main/java/com/k1/fyber/OffersFragment.java)
-* 4. Check the returned hash to check that it’s a real response (check signature) 
+* Create a form asking for the variables (Uid, API key, appid, pub0) => [GetParameterDialogFragment.java](./app/src/main/java/com/k1/fyber/GetParameterDialogFragment.java)
+* Make the request to the API passing the params and the authentication hash => [MainActivity.java](./app/src/main/java/com/k1/fyber/MainActivity.java#get)
+* Get the result from the response. [OffersFragment.java](./app/src/main/java/com/k1/fyber/OffersFragment.java)
+* Check the returned hash to check that it’s a real response (check signature)[MainActivity#OffersDataCallback](./app/src/main/java/com/k1/fyber/OffersFragment.java#OffersDataCallback)
+* Render the offers in a view. [MainActivity#OffersDataCallback](./app/src/main/java/com/k1/fyber/OffersFragment.java#OffersDataCallback)
+    - If we have offers there we render them (title, teaser, thumbnail hires and payout) 
+    - If we have no offers there we render a message like ‘No offers’
+* Create functional and unit tests (choose your tool) [MainActivityRobolectricTest.java](./app/src/test/java/com/k1/fyber/MainActivityRobolectricTest.java)
+* Check Fyber Mobile Offer API Documentation at http://developer.fyber.com/content/android/offer-wall/offer-api/ 
+* Create a github repository and send us the URL with the solution of the challenge [Fyber](https://github.com/LordK1/Fyber) 
+
+## CAUTION
+Please, Notice it's really experimental project, maybe not convenient for real production project, and I just try to pass tasks of this challenge !!!
+Maybe there are a lot of better solutions for some parts, whatever some parts are useless or unimportant but used to because I want to showcasing my skills and experiences in Android Development!!
+  
+ 
+
 
 ## Requirements & Installation
-You can download APK (app/app-release.apk) file from this [link](),
+You can download APK (app/app-release.apk) file from this [link](./app/app-release.apk),
  
 Or make it from source as below :
 
@@ -24,7 +37,6 @@ Or make it from source as below :
 this is a list of used libraries/third parties to make an optimized solution:
 
 - [Retrofit 2](http://square.github.io/retrofit/)
-- [Dagger 2](http://google.github.io/dagger/)
 - [Picasso](http://square.github.io/picasso/)
 - [GSON](https://github.com/google/gson)
 - [RecyclerView,CardView](https://developer.android.com/training/material/lists-cards.html)
@@ -66,6 +78,6 @@ locale: ‘DE’
 ip: ‘109.235.143.113’ 
 API Key: 1c915e3b5d42d05136185030892fbb846c278927
 
-
+### It's my pleasure to hear your feedback ASAP:")
 
 

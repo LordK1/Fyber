@@ -275,12 +275,11 @@ public class MainActivity extends AppCompatActivity implements GetParameterDialo
         @Override
         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             try {
-
+                // To check signature of header and API Key with sha1 format
                 final String signatureHeader = response.headers().get(RESPONSE_SIGNATURE);
                 Log.i(TAG, " signatureHeader : " + signatureHeader);
                 responseBody = response.body().string();
-                StringBuilder builder = new StringBuilder(responseBody).append(API_KEY);
-                Log.i(TAG, " responseBody : " + responseBody);
+                final StringBuilder builder = new StringBuilder(responseBody).append(API_KEY);
                 final String sha1FromString = generateSHA1FromString(builder.toString());
                 Log.i(TAG, " sha1FromString : " + sha1FromString);
                 checkSignature = signatureHeader.equals(sha1FromString);
@@ -289,11 +288,9 @@ public class MainActivity extends AppCompatActivity implements GetParameterDialo
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (checkSignature) {
-
-                if (response.isSuccessful()) {
+            if (checkSignature) { // signature is ok ?
+                if (response.isSuccessful()) { // response is successful
                     final OffersData offersData = new GsonBuilder().create().fromJson(responseBody, OffersData.class);
-//                    Log.i(TAG, " ---------- OFFERS : " + offersData);
 
                     if (offersData.getOffers().isEmpty()) { // check the offers list to handle empty list
                         try {
